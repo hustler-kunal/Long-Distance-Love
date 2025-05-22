@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Virtual Hug Experience ❤️‍🔥</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #111; /* dark background */
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  #container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #3a0ca3, #000);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    text-align: center;
+  }
+  #floatingHearts {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .heart {
+    position: absolute;
+    width: 20px; height: 20px;
+    background: #ff3366;
+    clip-path: polygon(
+      50% 0%, 61% 7%, 70% 15%, 75% 25%, 75% 37%, 70% 50%, 50% 70%, 30% 50%, 25% 37%, 25% 25%, 30% 15%, 39% 7%
+    );
+    opacity: 0.8;
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+  }
+  #messageBox {
+    position: relative;
+    z-index: 10;
+    max-width: 400px;
+    margin-bottom: 30px;
+    font-size: 1.3rem;
+    min-height: 60px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  #teddy {
+    width: 120px;
+    cursor: pointer;
+    z-index: 10;
+    user-select: none;
+    transition: transform 0.4s ease;
+    filter: drop-shadow(0 0 10px #ff3c78);
+  }
+  #teddy.zoomed {
+    animation: zoomSpin 1.5s forwards;
+    filter: drop-shadow(0 0 20px #ff6699);
+  }
+  @keyframes zoomSpin {
+    0% { transform: scale(1) rotate(0deg);}
+    50% { transform: scale(1.7) rotate(360deg);}
+    100% { transform: scale(1) rotate(720deg);}
+  }
+  #hugBtn {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    padding: 12px 25px;
+    background: #ff3366;
+    border: none;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 0 12px #ff3366;
+    transition: background 0.3s ease;
+  }
+  #hugBtn:disabled {
+    background: #7a2a45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  #hugBtn:hover:not(:disabled) {
+    background: #ff6680;
+  }
+  #hugCount {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    z-index: 10;
+  }
+  #secretMsg {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffccff;
+    text-shadow: 0 0 8px #ff33aa;
+    z-index: 11;
+    display: none;
+  }
+  #sharePrompt {
+    margin-top: 25px;
+    font-size: 1rem;
+    color: #ddd;
+    z-index: 10;
+    opacity: 0.8;
+  }
+  #shareBtn {
+    margin-top: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #3b82f6;
+    transition: background 0.3s ease;
+  }
+  #shareBtn:hover {
+    background: #60a5fa;
+  }
+  #countdown {
+    margin-top: 12px;
+    font-size: 1rem;
+    color: #ff9999;
+    font-weight: 700;
+    z-index: 10;
+  }
+  /* Fireworks styles */
+  .firework {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 10px 4px #ff4dd2;
+    animation: fireworkExplode 0.8s ease forwards;
+  }
+  @keyframes fireworkExplode {
+    0% {
+      opacity: 1;
+      transform: scale(0.3);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+      box-shadow: 0 0 30px 15px #ff4dd2;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div id="floatingHearts"></div>
+  <div id="messageBox"></div>
+  <img id="teddy" src="https://media.giphy.com/media/MNlmfzkhmZxF9d5qmF/giphy.gif" alt="Teddy Hug GIF" />
+  <button id="hugBtn">Send a Virtual Hug 🤗</button>
+  <div id="hugCount">Hugs sent: 0</div>
+  <div id="countdown"></div>
+  <div id="secretMsg">💖 YOU ARE LOVED 💖</div>
+</div>
+
+<audio id="hugSound" src="https://actions.google.com/sounds/v1/animals/cat_purr_close.ogg"></audio>
+<audio id="bgMusic" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_4b6b87d702.mp3?filename=relaxing-calm-background-music-10361.mp3" loop></audio>
+
+<script>
+  const container = document.getElementById('container');
+  const floatingHearts = document.getElementById('floatingHearts');
+  const messageBox = document.getElementById('messageBox');
+  const teddy = document.getElementById('teddy');
+  const hugBtn = document.getElementById('hugBtn');
+  const hugCount = document.getElementById('hugCount');
+  const secretMsg = document.getElementById('secretMsg');
+  const countdownEl = document.getElementById('countdown');
+  const hugSound = document.getElementById('hugSound');
+  const bgMusic = document.getElementById('bgMusic');
+
+  // Messages typed one by one
+  const messages = [
+    "Hey there... This is your virtual hug space.",
+    "Sometimes we all need a little love and support.",
+    "So here’s a hug, just for you 🤗",
+    "Tap the teddy to send it again!",
+    "Feel free to share the love 💖"
+  ];
+
+  let hugCounter = 0;
+  let typingIndex = 0;
+  let typingPos = 0;
+  let typingInterval;
+  let cooldown = false;
+  let cooldownSeconds = 5;
+
+  // Start background music softly on load
+  window.onload = () => {
+    bgMusic.volume = 0.15;
+    bgMusic.play().catch(() => { /* autoplay might block, ignore */});
+    typeMessage();
+    spawnHeartsPeriodically();
+  };
+
+  // Typing effect for messages
+  function typeMessage() {
+    if(typingIndex >= messages.length) {
+      setTimeout(() => {
+        messageBox.textContent = "";
+        typingIndex = 0;
+        typingPos = 0;
+        typeMessage();
+      }, 4000);
+      return;
+    }
+    let currentMsg = messages[typingIndex];
+    typingInterval = setInterval(() => {
+      if (typingPos <= currentMsg.length) {
+        messageBox.textContent = currentMsg.slice(0, typingPos);
+        typingPos++;
+      } else {
+        clearInterval(typingInterval);
+        typingIndex++;
+        typingPos = 0;
+        setTimeout(typeMessage, 2500);
+      }
+    }, 50);
+  }
+
+  // Create a floating heart at random position
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = window.innerHeight + 'px';
+    heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+    floatingHearts.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }
+
+  function spawnHeartsPeriodically() {
+    createHeart();
+    setTimeout(spawnHeartsPeriodically, 400);
+  }
+
+  // Confetti fireworks on milestone
+  function fireworks() {
+    for(let i=0; i<15; i++) {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.width = '15px';
+      firework.style.height = '15px';
+      firework.style.left = (window.innerWidth/2 + (Math.random()*300 - 150)) + 'px';
+      firework.style.top = (window.innerHeight/2 + (Math.random()*300 - 150)) + 'px';
+      container.appendChild(firework);
+      setTimeout(() => firework.remove(), 800);
+    }
+  }
+
+  // Zoom & spin teddy with confetti burst
+  function animateTeddy() {
+    teddy.classList.add('zoomed');
+    hugSound.currentTime = 0;
+    hugSound.play();
+
+    // Create burst hearts
+    for(let i=0; i<20; i++) {
+      setTimeout(() => {
+        const burstHeart = document.createElement('div');
+        burstHeart.className = 'heart';
+        burstHeart.style.left = (window.innerWidth/2 + (Math.random()*200 - 100)) + 'px';
+        burstHeart.style.top = (window.innerHeight/2 + (Math.random()*200 - 100)) + 'px';
+        burstHeart.style.animationDuration = '2s';
+        floatingHearts.appendChild(burstHeart);
+        setTimeout(() => burstHeart.remove(), 2000);
+      }, i*70);
+    }
+
+    setTimeout(() => teddy.classList.remove('zoomed'), 1500);
+  }
+
+  function updateHugCount() {
+    hugCount.textContent = `Hugs sent: ${hugCounter}`;
+  }
+
+  function showSecretMessage() {
+    secretMsg.style.display = 'block';
+    fireworks();
+    setTimeout(() => {
+      secretMsg.style.display = 'none';
+    }, 4000);
+  }
+
+  function setCooldown(seconds) {
+    cooldown = true;
+    let secLeft = seconds;
+    countdownEl.textContent = `Wait ${secLeft} second${secLeft > 1 ? 's' : ''} before next hug...`;
+    hugBtn.disabled = true;
+
+    const interval = setInterval(() => {
+      secLeft--;
+      countdownEl.textContent = `Wait ${secLeft} second${secLeft > 1 ? 's' : ''} before next hug...`;
+      if(secLeft <= 0) {
+        clearInterval(interval);
+        cooldown = false;
+        countdownEl.textContent = '';
+        hugBtn.disabled = false;
+      }
+    }, 1000);
+  }
+
+  hugBtn.onclick = () => {
+    if(cooldown) return;
+    hugCounter++;
+    animateTeddy();
+    updateHugCount();
+
+    if([5, 10, 20].includes(hugCounter)) {
+      showSecretMessage();
+    }
+
+    setCooldown(cooldownSeconds);
+  };
+
+  // Also hug if teddy clicked
+  teddy.onclick = () => hugBtn.click();
+
+</script>
+
+</body>
+</html>

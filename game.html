@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Impressive Interactive Hug Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+    body {
+      margin: 0; padding: 0; height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      color: #5a2a2a;
+      overflow: hidden;
+      user-select: none;
+    }
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      margin-bottom: 10px;
+      color: #c83e61;
+      text-shadow: 0 0 8px #c83e61;
+    }
+    #choices, #followUp, #hugPowerContainer, #finalMessage {
+      margin-top: 15px;
+    }
+    .hug-btn, .answer-btn {
+      background: #d64161;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: white;
+      margin: 10px;
+      box-shadow: 0 0 15px #d64161;
+      transition: background 0.3s ease;
+      min-width: 130px;
+      user-select: none;
+    }
+    .hug-btn:hover, .answer-btn:hover {
+      background: #ff6781;
+    }
+    #animation {
+      margin: 30px 0 15px 0;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: #fff0f4;
+      box-shadow: 0 0 20px 5px #ff6781aa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: visible;
+      user-select: none;
+    }
+    #animation img {
+      max-width: 180px;
+      max-height: 180px;
+      border-radius: 20px;
+      filter: drop-shadow(0 0 8px #c83e61);
+      user-select: none;
+    }
+    #story {
+      font-size: 1.4rem;
+      min-height: 80px;
+      max-width: 400px;
+      margin: 10px auto 25px;
+      color: #78253b;
+      font-weight: 600;
+    }
+    #hugPowerContainer {
+      width: 320px;
+      height: 25px;
+      background: #fcd8dc;
+      border-radius: 15px;
+      margin: 20px auto;
+      box-shadow: inset 0 0 10px #d64161;
+      overflow: hidden;
+      user-select: none;
+    }
+    #hugPower {
+      height: 100%;
+      background: #d64161;
+      width: 0;
+      border-radius: 15px;
+      transition: width 0.5s ease;
+    }
+    #timerBar {
+      height: 15px;
+      width: 320px;
+      background: #ffd6de;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px auto;
+      box-shadow: inset 0 0 5px #c83e61;
+    }
+    #timerProgress {
+      height: 100%;
+      background: #ff6781;
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+    #restartBtn {
+      display: none;
+      margin-top: 30px;
+      background: #5a2a2a;
+      color: #ffd6de;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 15px #5a2a2a;
+      user-select: none;
+    }
+    #restartBtn:hover {
+      background: #7a3a4a;
+    }
+    /* Hearts floating */
+    .heart {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: #ff6781;
+      clip-path: polygon(50% 0%, 85% 25%, 100% 62%, 50% 100%, 0% 62%, 15% 25%);
+      opacity: 0.85;
+      animation: floatUp 3s ease forwards;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.85;
+      }
+      100% {
+        transform: translateY(-200px) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Send a Hug ❤️</h1>
+
+<div id="choices">
+  <button class="hug-btn" data-hug="bear">🐻 Bear Hug</button>
+  <button class="hug-btn" data-hug="quick">⚡ Quick Hug</button>
+  <button class="hug-btn" data-hug="squeeze">💞 Virtual Squeeze</button>
+</div>
+
+<div id="animation"></div>
+<div id="story"></div>
+
+<div id="hugPowerContainer" style="display:none;">
+  <div id="hugPower"></div>
+</div>
+
+<div id="timerBar" style="display:none;">
+  <div id="timerProgress"></div>
+</div>
+
+<div id="followUp"></div>
+
+<button id="restartBtn">Send Another Hug</button>
+
+<script>
+  const choices = document.querySelectorAll('.hug-btn');
+  const storyEl = document.getElementById('story');
+  const animationEl = document.getElementById('animation');
+  const restartBtn = document.getElementById('restartBtn');
+  const hugPowerContainer = document.getElementById('hugPowerContainer');
+  const hugPower = document.getElementById('hugPower');
+  const timerBar = document.getElementById('timerBar');
+  const timerProgress = document.getElementById('timerProgress');
+  const followUp = document.getElementById('followUp');
+  const choicesDiv = document.getElementById('choices');
+
+  let hugData = {
+  bear: {
+    gif: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnFzeXZjNHNtenJnbXYzOW1mbGUwMGRldG4xY3N3M3FoYXAzZWJ0cyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/mWLOeVTFZIdgy06d7Z/giphy.gif',
+    story: "A warm bear hug — wrapping love and comfort all around.",
+    powerMsg: "Your hug power is growing strong!",
+    extraMsg: "You powered up to a Super Bear Hug! Infinite love sent! 💖",
+  },
+  quick: {
+    gif: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXp0c3ppdHpubzQ3bmYwb2N6czVpa2Z4OTIzaHp2NGFtZ3QzZWZzcSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/16bJmyPvRbCDu/giphy.gif',
+    story: "A quick hug — full of energy and brightness!",
+    powerMsg: "Keep up the quick hugs!",
+    extraMsg: "You nailed a Flash Hug! So energetic and bright! ⚡",
+  },
+  squeeze: {
+    gif: 'https://media.giphy.com/media/5Fuq52UWCrR52g0rb0/giphy.gif?cid=ecf05e4735fqeec1ozlzgamjrkof7mqoov07x3u1i7a1134t&ep=v1_gifs_search&rid=giphy.gif&ct=g',
+    story: "A soft virtual squeeze — gentle and sweet from afar.",
+    powerMsg: "The virtual love is glowing!",
+    extraMsg: "You created a Heartfelt Squeeze! Distance can't stop love! 💕",
+  }
+};
+
+
+  let hugType = null;
+  let hugPowerValue = 0;
+  let timerInterval = null;
+  let timerWidth = 100;
+
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.top = (window.innerHeight - 80) + 'px';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 3000);
+  }
+
+  function startTimer() {
+    timerWidth = 100;
+    timerProgress.style.width = timerWidth + '%';
+    timerBar.style.display = 'block';
+    timerInterval = setInterval(() => {
+      timerWidth -= 2;
+      timerProgress.style.width = timerWidth + '%';
+      if (timerWidth <= 0) {
+        clearInterval(timerInterval);
+        timerBar.style.display = 'none';
+        endHugPower();
+      }
+    }, 60);
+  }
+
+  function endHugPower() {
+    hugPowerContainer.style.display = 'none';
+    followUp.innerHTML = `<p style="font-weight:bold; margin:15px 0;">${hugData[hugType].extraMsg}</p>`;
+    restartBtn.style.display = 'inline-block';
+
+    // Show the GIF multiple times as celebration
+    animationEl.innerHTML = '';
+    for(let i=0; i<5; i++) {
+      const img = document.createElement('img');
+      img.src = hugData[hugType].gif;
+      img.style.position = 'absolute';
+      img.style.left = (20 + i*40) + 'px';
+      img.style.top = (20 + (i%2)*30) + 'px';
+      img.style.width = '100px';
+      img.style.borderRadius = '20px';
+      animationEl.appendChild(img);
+    }
+
+    for(let i=0; i<20; i++) {
+      setTimeout(createHeart, i*150);
+    }
+  }
+
+  function showFollowUp() {
+    followUp.innerHTML = `
+      <p>${hugData[hugType].powerMsg}</p>
+      <p>Click the hug button rapidly to fill the hug meter!</p>
+      <button class="answer-btn" id="powerBtn">Hug Power Up!</button>
+    `;
+    document.getElementById('powerBtn').addEventListener('click', () => {
+      hugPowerValue += 10;
+      hugPower.style.width = hugPowerValue + '%';
+      createHeart();
+
+      if(hugPowerValue >= 100) {
+        clearInterval(timerInterval);
+        timerBar.style.display = 'none';
+        endHugPower();
+      }
+    });
+    hugPowerValue = 0;
+    hugPower.style.width = '0%';
+    hugPowerContainer.style.display = 'block';
+    startTimer();
+  }
+
+  function showHug(hug) {
+    hugType = hug;
+    animationEl.innerHTML = `<img src="${hugData[hug].gif}" alt="${hug} hug">`;
+    storyEl.textContent = hugData[hug].story;
+    choicesDiv.style.display = 'none';
+    followUp.innerHTML = '';
+    restartBtn.style.display = 'none';
+
+    setTimeout(() => {
+      showFollowUp();
+    }, 2000);
+  }
+
+  restartBtn.onclick = () => {
+    hugPowerContainer.style.display = 'none';
+    timerBar.style.display = 'none';
+    hugPower.style.width = '0';
+    hugPowerValue = 0;
+    animationEl.innerHTML = '';
+    storyEl.textContent = '';
+    followUp.innerHTML = '';
+    restartBtn.style.display = 'none';
+    choicesDiv.style.display = 'flex';
+  };
+
+  choices.forEach(btn => {
+    btn.onclick = () => showHug(btn.dataset.hug);
+  });
+</script>
+
+</body>
+</html>

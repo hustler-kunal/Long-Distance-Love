@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome to Our Loving Space 💖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #ffd1dc, #ffafbd);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 50px 20px;
+      color: #7b2ff7;
+      user-select: none;
+      overflow-x: hidden;
+      position: relative;
+      overflow-y: hidden;
+    }
+
+    /* Sparkles background */
+    .sparkles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #fff7ff;
+      border-radius: 50%;
+      opacity: 0.8;
+      filter: drop-shadow(0 0 5px #ffcee3);
+      animation: sparkleBlink 3s infinite ease-in-out;
+      will-change: transform, opacity;
+    }
+    @keyframes sparkleBlink {
+      0%, 100% { opacity: 0.8; transform: scale(1) translateY(0); }
+      50% { opacity: 0.2; transform: scale(0.7) translateY(-5px); }
+    }
+
+    /* Pulsing hearts background */
+    .background-hearts {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 0;
+      filter: drop-shadow(0 0 8px #ff6f91);
+    }
+
+    /* Heart shape with rotation */
+    .heart {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle at 30% 30%, #ff6f91, #ffb6c1);
+      transform-origin: center;
+      filter: drop-shadow(0 0 6px #ff6f91);
+      animation: floatPulse linear infinite;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      will-change: transform;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      background: radial-gradient(circle at 30% 30%, #ff6f91, #ffb6c1);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -14px;
+      left: 0;
+    }
+    .heart::after {
+      left: 14px;
+      top: 0;
+    }
+
+    /* Floating and pulsing animation with rotation */
+    @keyframes floatPulse {
+      0% {
+        transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+        opacity: 0.8;
+      }
+      50% {
+        transform: translateY(-110px) translateX(10px) scale(1.15) rotate(10deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(0) translateX(0) scale(1) rotate(0deg);
+        opacity: 0.8;
+      }
+    }
+
+    /* Different heart sizes and animation timings */
+    .heart:nth-child(1) { left: 10vw; animation-duration: 8s; animation-delay: 0s; width: 32px; height: 32px; }
+    .heart:nth-child(1)::before, .heart:nth-child(1)::after { width: 32px; height: 32px; top: -16px; left: 0; left: 16px; }
+    .heart:nth-child(2) { left: 25vw; animation-duration: 12s; animation-delay: 2s; width: 26px; height: 26px; }
+    .heart:nth-child(3) { left: 40vw; animation-duration: 9s; animation-delay: 4s; width: 30px; height: 30px; }
+    .heart:nth-child(4) { left: 55vw; animation-duration: 11s; animation-delay: 6s; width: 24px; height: 24px; }
+    .heart:nth-child(5) { left: 70vw; animation-duration: 10s; animation-delay: 1s; width: 28px; height: 28px; }
+    .heart:nth-child(6) { left: 85vw; animation-duration: 14s; animation-delay: 3s; width: 20px; height: 20px; }
+
+    /* Container for content with glow and fade-in */
+    .container {
+      position: relative;
+      max-width: 600px;
+      background: linear-gradient(135deg, rgba(255 255 255 / 0.95), rgba(255 255 255 / 0.75));
+      border-radius: 30px;
+      padding: 45px 40px 65px;
+      box-shadow: 0 0 35px 8px #ff6f91aa;
+      text-align: center;
+      z-index: 10;
+      font-weight: 600;
+      user-select: none;
+      backdrop-filter: blur(14px);
+      animation: fadeIn 1.8s ease forwards;
+      border: 2px solid #ff6f91cc;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Navigation bar */
+    nav {
+      margin-bottom: 42px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      user-select: none;
+    }
+    nav a {
+      background: linear-gradient(135deg, #ff6f91, #ff2a67);
+      color: white;
+      padding: 14px 34px;
+      font-weight: 700;
+      font-size: 1.22rem;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(255, 42, 103, 0.5);
+      transition: background-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 3px;
+      background: #ffc0cb;
+      bottom: 0;
+      left: 50%;
+      border-radius: 50px 50px 0 0;
+      opacity: 0.9;
+      transition: width 0.35s ease, left 0.35s ease;
+    }
+    nav a:hover, nav a:focus {
+      background: linear-gradient(135deg, #ff2a67, #ff6f91);
+      transform: scale(1.12);
+      box-shadow: 0 10px 28px rgba(255, 42, 103, 0.9);
+      outline: none;
+      cursor: pointer;
+    }
+    nav a:hover::after, nav a:focus::after {
+      width: 80%;
+      left: 10%;
+    }
+
+    /* Heading with pulsing heart */
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.8rem;
+      color: #c83e61;
+      text-shadow:
+        0 0 16px #ff6f91,
+        0 0 30px #ff2a67;
+      margin-bottom: 28px;
+      display: inline-block;
+      user-select: none;
+      position: relative;
+      animation: glowPulse 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowPulse {
+      0% {
+        text-shadow:
+          0 0 18px #ff2a67,
+          0 0 36px #ff6f91;
+      }
+      100% {
+        text-shadow:
+          0 0 28px #ff2a67,
+          0 0 48px #ff6f91;
+      }
+    }
+
+    /* Pulsing heart emoji */
+    h1 span {
+      display: inline-block;
+      margin-left: 15px;
+      font-size: 2.8rem;
+      animation: heartBeat 1.8s ease-in-out infinite;
+      user-select: none;
+      filter: drop-shadow(0 0 12px #ff2a67);
+    }
+    @keyframes heartBeat {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px #ff2a67);
+      }
+      50% {
+        transform: scale(1.35);
+        filter: drop-shadow(0 0 30px #ff6f91);
+      }
+    }
+
+    /* Paragraph style with soft shadow */
+    p {
+      font-size: 1.34rem;
+      max-width: 550px;
+      margin: 18px auto;
+      color: #7b2f7f;
+      font-weight: 600;
+      line-height: 1.65;
+      user-select: none;
+      text-shadow: 0 1px 4px rgba(255, 182, 193, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.9rem;
+      }
+      nav a {
+        padding: 12px 24px;
+        font-size: 1.05rem;
+      }
+      p {
+        font-size: 1.15rem;
+        max-width: 90vw;
+      }
+      .container {
+        padding: 35px 25px 55px;
+        margin: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sparkles -->
+  <div class="sparkles" aria-hidden="true">
+    <div class="sparkle" style="top: 20vh; left: 15vw; animation-delay: 0s;"></div>
+    <div class="sparkle" style="top: 60vh; left: 35vw; animation-delay: 1.5s;"></div>
+    <div class="sparkle" style="top: 40vh; left: 80vw; animation-delay: 3s;"></div>
+    <div class="sparkle" style="top: 75vh; left: 50vw; animation-delay: 2.7s;"></div>
+    <div class="sparkle" style="top: 25vh; left: 60vw; animation-delay: 4.5s;"></div>
+  </div>
+
+  <!-- Background hearts -->
+  <div class="background-hearts" aria-hidden="true">
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+  </div>
+
+  <div class="container" role="main" aria-label="Welcome section with loving message">
+    <nav aria-label="Primary navigation">
+      <a href="virtualhug.html" tabindex="0">Virtual Hug</a>
+      <a href="game.html" tabindex="0">Hug Game</a>
+      <a href="surprise.html" tabindex="0">Surprise</a>
+    </nav>
+
+    <h1>Welcome to Our Loving Space <span aria-hidden="true">❤️</span></h1>
+    <p>Here you can play the hug game or see a special surprise crafted just for you.</p>
+    <p>Use the navigation above to explore and enjoy!</p>
+  </div>
+
+</body>
+</html>

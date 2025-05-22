@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surprise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to right, #ffe6e6, #ffc6d0);
+      color: #5a2a2a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      background: #fff0f4;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: floatIn 1.2s ease-out;
+    }
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.5rem;
+      color: #c83e61;
+      animation: fadeIn 2s ease forwards;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 1rem;
+      background: #ff4d79;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      background: #e6395c;
+    }
+    #surprise {
+      margin-top: 30px;
+      animation: fadeIn 1s ease forwards;
+    }
+    #surprise img {
+      width: 200px;
+      margin-top: 10px;
+      border-radius: 15px;
+      animation: popIn 0.8s ease-out;
+    }
+
+    @keyframes floatIn {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hey Love, Click This! 😘</h1>
+    <p>My Love,</p>
+    <p>I made this page just for you to make you smile today 😊</p>
+    <button onclick="showSurprise()">Click for a surprise</button>
+    <div id="surprise" style="display: none;">
+      <p style="font-weight: 600; font-size: 1.2rem;">You are the most special person in my life 💖</p>
+      <img src="https://media.giphy.com/media/3orieUe6ejxSFxYCXe/giphy.gif" alt="Love Gif">
+    </div>
+  </div>
+
+  <script>
+    function showSurprise() {
+      const surprise = document.getElementById("surprise");
+      surprise.style.display = "block";
+      surprise.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
